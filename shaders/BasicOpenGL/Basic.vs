@@ -1,4 +1,4 @@
-#version 430 core
+#version 410 core
 // Change to 410 for macOS
 
 layout(location=0) in vec3 position;
