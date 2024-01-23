@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 
 	// GLFW setup
 	// Switch to 4.1 if necessary for macOS
-	GLFWwindow* window = setupGLFW("BasicGraphics", 4, 1, 800, 800, DEBUG_MODE);
+	GLFWwindow* window = setupGLFW("Assign01: letourlt", 4, 1, 800, 800, DEBUG_MODE);
 
 	// GLEW setup
 	setupGLEW(window);
@@ -72,14 +72,14 @@ int main(int argc, char **argv) {
 	if(DEBUG_MODE) checkAndSetupOpenGLDebugging();
 
 	// Set the background color to a shade of blue
-	glClearColor(0.0f, 0.0f, 0.7f, 1.0f);	
+	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 
 	// Create and load shaders
 	GLuint programID = 0;
 	try {		
 		// Load vertex shader code and fragment shader code
-		string vertexCode = readFileToString("./shaders/BasicOpenGL/Basic.vs");
-		string fragCode = readFileToString("./shaders/BasicOpenGL/Basic.fs");
+		string vertexCode = readFileToString("./shaders/Assign01/Basic.vs");
+		string fragCode = readFileToString("./shaders/Assign01/Basic.fs");
 
 		// Print out shader code, just to check
 		if(DEBUG_MODE) printShaderCode(vertexCode, fragCode);
