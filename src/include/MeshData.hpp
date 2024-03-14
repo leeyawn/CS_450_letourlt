@@ -12,6 +12,7 @@ struct Vertex {
 	glm::vec4 color;
 	glm::vec3 normal = glm::vec3(0,0,0);
 	glm::vec2 texcoord = glm::vec2(0,0);
+	glm::vec3 tangent = glm::vec3(1,0,0);
 };
 
 // Struct for holding mesh data

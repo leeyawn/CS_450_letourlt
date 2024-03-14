@@ -13,7 +13,8 @@
 #include "glm/gtx/string_cast.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include <stb_image.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 using namespace std;
 
@@ -238,7 +239,38 @@ void makeCylinder(Mesh &m, float length, float radius, int faceCnt) {
     computeAllNormals(m);
 }
 
+unsigned int loadAndCreateTexture(string filename) {
+    int texWidth, texHeight, texComponents;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char *imageData = stbi_load(filename.c_str(), &texWidth, &texHeight, &texComponents, 0);
+    unsigned int texID = 0;
+    if(imageData) {
+        glGenTextures(1, &texID);
+        GLenum format;
+        if(texComponents == 3) {
+            format = GL_RGB;
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+        } else {
+            format = GL_RGBA;
+        }
+        glBindTexture(GL_TEXTURE_2D, texID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, texWidth, texHeight, 0, format, GL_UNSIGNED_BYTE, imageData);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        stbi_image_free(imageData);
+    } else {
+        glfwTerminate();
+        exit(1);
+    }
+
+    return texID;
+}
 
 // vector<MeshGL> allMeshes;
 //
@@ -328,34 +360,16 @@ int main(int argc, char **argv) {
     GLint lightPosLoc = glGetUniformLocation(progID, "light.pos");
     GLint lightColorLoc = glGetUniformLocation(progID, "light.color");
 
-    string textureFileName = "test.png";
-    int texWidth, texHeight, texComponents;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char *imageData = stbi_load(textureFileName.c_str(), &texWidth, &texHeight, &texComponents, 0);
-    unsigned int texID = 0;
-    if(imageData) {
-        glGenTextures(1, &texID);
-        GLenum format;
-        if(texComponents == 3) {
-            format = GL_RGB;
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        } else {
-            format = GL_RGBA;
-        }
-        glBindTexture(GL_TEXTURE_2D, texID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, texWidth, texHeight, 0, format, GL_UNSIGNED_BYTE, imageData);
-        stbi_image_free(imageData);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    } else {
-        glfwTerminate();
-        exit(1);
-    }
-
+    unsigned int diffTexID = loadAndCreateTexture("test.png");
+    unsigned int normTexID = loadAndCreateTexture("normal.png");
+    
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texID);
+    glBindTexture(GL_TEXTURE_2D, diffTexID);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, normTexID);
+
     GLint diffuseTexLoc = glGetUniformLocation(progID, "diffuseTexture");
+    GLint normalTexLoc = glGetUniformLocation(progID, "normalTexture");
 
     // quad
     /*
@@ -422,10 +436,13 @@ int main(int argc, char **argv) {
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
+    glEnableVertexAttribArray(4);
     glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, position));
     glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, color));
     glVertexAttribPointer(2, 3, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, normal));
     glVertexAttribPointer(3, 2, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
+    glVertexAttribPointer(4, 3, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
 
 
     glGenBuffers(1, &EBO);
@@ -481,6 +498,7 @@ int main(int argc, char **argv) {
         
         // texture
         glUniform1i(diffuseTexLoc, 0);
+        glUniform1i(normalTexLoc, 1);
 
         // idk
         glBindVertexArray(VAO);
@@ -493,8 +511,12 @@ int main(int argc, char **argv) {
         this_thread::sleep_for(chrono::milliseconds(15));
     }
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glDeleteTextures(1, &texID);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDeleteTextures(1, &diffTexID);
+    glDeleteTextures(1, &normTexID);
 
 
     glBindVertexArray(0);
