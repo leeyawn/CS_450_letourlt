@@ -17,6 +17,7 @@ void createMeshGL(Mesh &m, MeshGL &mgl) {
 	// Enable the first two vertex attribute arrays
 	glEnableVertexAttribArray(0);	// position
 	glEnableVertexAttribArray(1);	// color
+	glEnableVertexAttribArray(2);   // normal
 	
 	// Bind the VBO and set up data mappings so that VAO knows how to read it
 	// 0 = pos (3 elements)
@@ -28,6 +29,8 @@ void createMeshGL(Mesh &m, MeshGL &mgl) {
 							(void*)offsetof(Vertex, position));
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
 							(void*)offsetof(Vertex, color));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+							(void*)offsetof(Vertex, normal));
 	
 	// Create Element Buffer Object (EBO)
 	glGenBuffers(1, &(mgl.EBO));
