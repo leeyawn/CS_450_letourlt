@@ -34,7 +34,7 @@ glm::mat4 makeLocalRotate(glm::vec3 offset, glm::vec3 axis, float angle) {
 	glm::mat4 rotateAngle = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
 	glm::mat4 translateOffset = glm::translate(glm::mat4(1.0f), offset);
 
-	glm::mat4 compTransformation = translateOffset * translateNegativeOffset * rotateAngle;
+	glm::mat4 compTransformation = translateOffset * rotateAngle * translateNegativeOffset;
 
 	return compTransformation; 
 }
@@ -112,7 +112,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 static void mouse_motion_callback(GLFWwindow *window, double xpos, double ypos) {
 	glm::vec2 currentMousePos = glm::vec2(xpos, ypos);
-    glm::vec2 relMouse = currentMousePos - mousePos;
+    glm::vec2 relMouse = -(currentMousePos - mousePos);
 
 	int fw, fh;
     glfwGetFramebufferSize(window, &fw, &fh);
@@ -121,7 +121,7 @@ static void mouse_motion_callback(GLFWwindow *window, double xpos, double ypos) 
         relMouse.x /= fw;
         relMouse.y /= fh;
 
-        relMouse.y = -relMouse.y;
+        //relMouse.y = -relMouse.y;
 
 		// relative x motion 
 		glm::vec4 lookAtV = glm::vec4(lookAt, 1.0);
