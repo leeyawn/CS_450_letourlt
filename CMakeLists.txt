@@ -104,3 +104,9 @@ add_executable(Assign06 ${GENERAL_SOURCES} "./src/app/Assign06.cpp")
 target_link_libraries(Assign06 ${ALL_LIBRARIES})
 install(TARGETS Assign06 RUNTIME DESTINATION bin/Assign06)
 install(DIRECTORY shaders/Assign06 DESTINATION bin/Assign06/shaders)
+
+# Assignment 07
+add_executable(Assign07 ${GENERAL_SOURCES} "./src/app/Assign07.cpp")
+target_link_libraries(Assign07 ${ALL_LIBRARIES})
+install(TARGETS Assign07 RUNTIME DESTINATION bin/Assign07)
+install(DIRECTORY shaders/Assign07 DESTINATION bin/Assign07/shaders)
