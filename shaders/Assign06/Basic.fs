@@ -30,7 +30,7 @@ void main()
     vec3 H = normalize(L + V); 
     float specularCoefficient = pow(max(dot(N, H), 0.0), shininess);
 
-    vec3 specularColor = vec3(light.color * specularCoefficient);
+    vec3 specularColor = diff * vec3(light.color * specularCoefficient);
 
     vec3 finalColor = diffColor + specularColor;
 
