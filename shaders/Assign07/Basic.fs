@@ -70,9 +70,9 @@ void main()
     vec3 kD = vec3(1.0) - kS;
     kD *= (1.0 - metallic);
 
-    if (metallic > 0.0) {
-       kD = vec3(0.0);
-    }
+    //if (metallic > 0.0) {
+     //  kD = vec3(0.0);
+    //}
     kD *= vec3(vertexColor) / PI;
 
     // specular reflection
